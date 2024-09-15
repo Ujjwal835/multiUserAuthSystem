@@ -1,10 +1,19 @@
 "use client";
 import { Avatar, Dropdown } from "flowbite-react";
 import { History } from "lucide-react";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 export default function Navbar() {
+  const router = useRouter();
+  async function handleLogout() {
+    console.log("Signout clicked");
+
+    await signOut();
+    router.push("/");
+  }
   return (
     <div className="flex border-b justify-between border-gray-300 py-2 px-16 bg-white items-center">
       <Link href="#">
@@ -33,7 +42,7 @@ export default function Navbar() {
           <Link href="/dashboard/profile">Profile</Link>
         </Dropdown.Item>
         <Dropdown.Divider />
-        <Dropdown.Item>Sign out</Dropdown.Item>
+        <Dropdown.Item onClick={() => signOut()}>Sign Out</Dropdown.Item>
       </Dropdown>
     </div>
   );
