@@ -98,7 +98,6 @@ export default function Sidebar() {
       : session?.user?.role === "VENDOR"
       ? vendorLinks
       : userLinks;
-  console.log(navLinks);
 
   return (
     <div className="w-[200px] min-h-screen bg-slate-800 text-slate-100  p-4">

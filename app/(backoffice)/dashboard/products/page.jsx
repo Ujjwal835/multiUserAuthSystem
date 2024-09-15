@@ -1,9 +1,8 @@
+import NotAuthorized from "@/components/backoffice/NotAuthorized";
 import { authOptions } from "@/lib/authOptions";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
-
-// Protecting Pages on Server Side
 
 export default async function page() {
   const session = await getServerSession(authOptions);
@@ -12,17 +11,17 @@ export default async function page() {
   }
 
   const role = session?.user?.role;
+  if (!(role === "ADMIN" || role === "VENDOR")) {
+    return <NotAuthorized />;
+  }
   return (
     <div>
-      <h2>
-        Welcome {session?.user?.name} with role {role}
-      </h2>
+      <h2>Welcome to the products</h2>
       <div className="py-6 space-y-3 ">
-        {role === "ADMIN" && <p>To be viewed by admin only</p>}
+        {role === "ADMIN" && <button>Delete Product</button>}
         {(role === "ADMIN" || role === "VENDOR") && (
-          <p>To be viewed by vendor and admin </p>
+          <button>Edit Product</button>
         )}
-        <p>can be viewed by all users</p>
       </div>
     </div>
   );
