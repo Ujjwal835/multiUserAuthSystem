@@ -38,7 +38,7 @@ export default function RegisterForm({ role }) {
         toast.success("User Created Successfully");
         console.log(responseData.data);
         reset();
-        router.push("/login");
+        router.push(`/verify-account/${responseData.data.id}`);
       } else {
         setLoading(false);
         if (response.status === 409) {

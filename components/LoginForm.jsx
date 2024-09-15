@@ -1,14 +1,62 @@
 "use client";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import Link from "next/link";
 import { FaGoogle } from "react-icons/fa";
 import { FaGithub } from "react-icons/fa";
+import { getData } from "@/lib/getData";
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  useEffect(() => {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const token = searchParams.get("token");
+    const id = searchParams.get("id");
+    if (token && id) {
+      setIsVerifying(true);
+      const verifyData = {
+        token,
+        id,
+      };
+      async function verify() {
+        const data = await getData(`users/${id}`);
+        if (data) {
+          // update the email verified to True
+          try {
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+            const response = await fetch(`${baseUrl}/api/users/verify`, {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(verifyData),
+            });
+            if (response.ok) {
+              // console.log(response);
+              // setLoading(false);
+              setIsVerifying(false);
+              toast.success("Account Verified Successfully");
+            } else {
+              setIsVerifying(false);
+              // setLoading(false);
+              toast.error("Something Went wrong");
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+      verify();
+    }
+
+    console.log(token);
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -44,7 +92,9 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 " action="#">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2 ">
+      {isVerifying && <p>Verifying Please Wait...</p>}
+
       <div>
         <label
           htmlFor="email"

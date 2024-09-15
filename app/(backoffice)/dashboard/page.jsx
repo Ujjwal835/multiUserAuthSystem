@@ -7,9 +7,9 @@ import React from "react";
 
 export default async function page() {
   const session = await getServerSession(authOptions);
-  if (!session) {
-    redirect("/login");
-  }
+    if (!session) {
+      redirect("/login");
+    }
 
   const role = session?.user?.role;
   return (
