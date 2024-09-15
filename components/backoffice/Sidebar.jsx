@@ -6,15 +6,80 @@ import {
   Layers3,
   LayoutGrid,
   Settings,
+  User,
   User2,
 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 
 export default function Sidebar() {
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  if (status === "loading") {
+    return <p>loading...</p>;
+  }
+  if (status === "unauthenticated") {
+    router.push("/login");
+    return;
+  }
   const pathname = usePathname();
-  const navLinks = [
+  const adminLinks = [
+    {
+      title: "Dashboard",
+      icon: Home,
+      href: "/dashboard",
+    },
+    {
+      title: "User Profile",
+      icon: User2,
+      href: "/dashboard/profile",
+    },
+    {
+      title: "Vendor Profile",
+      icon: User2,
+      href: "/dashboard/vendor-profile",
+    },
+    {
+      title: "Manage Products",
+      icon: Layers3,
+      href: "/dashboard/products",
+    },
+    {
+      title: "Manage Categories",
+      icon: LayoutGrid,
+      href: "/dashboard/categories",
+    },
+    {
+      title: "Manage Users",
+      icon: User,
+      href: "/dashboard/users",
+    },
+    {
+      title: "Settings",
+      icon: Settings,
+      href: "/dashboard/settings",
+    },
+  ];
+  const vendorLinks = [
+    {
+      title: "Dashboard",
+      icon: Home,
+      href: "/dashboard",
+    },
+    {
+      title: "Manage Products",
+      icon: Layers3,
+      href: "/dashboard/products",
+    },
+    {
+      title: "Vendor Profile",
+      icon: User2,
+      href: "/dashboard/vendor-profile",
+    },
+  ];
+  const userLinks = [
     {
       title: "Dashboard",
       icon: Home,
@@ -25,22 +90,16 @@ export default function Sidebar() {
       icon: User2,
       href: "/dashboard/profile",
     },
-    {
-      title: "Products",
-      icon: Layers3,
-      href: "/dashboard/products",
-    },
-    {
-      title: "Categories",
-      icon: LayoutGrid,
-      href: "/dashboard/categories",
-    },
-    {
-      title: "Settings",
-      icon: Settings,
-      href: "/dashboard/settings",
-    },
   ];
+
+  const navLinks =
+    session?.user?.role === "ADMIN"
+      ? adminLinks
+      : session?.user?.role === "VENDOR"
+      ? vendorLinks
+      : userLinks;
+  console.log(navLinks);
+
   return (
     <div className="w-[200px] min-h-screen bg-slate-800 text-slate-100  p-4">
       <Link href="#" className="flex items-center">
