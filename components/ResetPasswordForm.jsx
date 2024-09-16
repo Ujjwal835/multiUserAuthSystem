@@ -1,13 +1,11 @@
 "use client";
-import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import Link from "next/link";
-import { FaGoogle } from "react-icons/fa";
-import { FaGithub } from "react-icons/fa";
 export default function ResetPasswordForm() {
+  const searchParams = useSearchParams();
   const router = useRouter();
   const {
     register,
@@ -19,22 +17,26 @@ export default function ResetPasswordForm() {
 
   async function onSubmit(data) {
     console.log(data);
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+    const token = searchParams.get("token");
+    const id = searchParams.get("id");
+    data.id = id;
     try {
       setLoading(true);
-      console.log("Attempting to sign in with credentials:", data);
-      const loginData = await signIn("credentials", {
-        ...data,
-        redirect: false,
+      const response = await fetch(`${baseUrl}/api/users/update-password`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
       });
-      console.log("SignIn response:", loginData);
-      if (loginData?.error) {
+      if (response.ok) {
         setLoading(false);
-        toast.error("Sign-in error: Check your credentials");
+        toast.success("Password Updated Successfully");
+        router.push("/login");
       } else {
-        // Sign-in was successful
-        toast.success("Login Successful");
-        reset();
-        router.push("/");
+        setLoading(false);
+        toast.error("Something Went wrong");
       }
     } catch (error) {
       setLoading(false);
@@ -90,7 +92,7 @@ export default function ResetPasswordForm() {
               fill="currentColor"
             />
           </svg>
-          Changing you in please wait...
+          Updating please wait...
         </button>
       ) : (
         <button
