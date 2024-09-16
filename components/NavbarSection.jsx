@@ -14,7 +14,7 @@ export default function NavbarSection() {
     console.log(session.user);
   }
 
-  const isLoggedIn = false;
+  const user = session?.user;
   return (
     <Navbar fluid rounded>
       <Navbar.Brand href="/">
@@ -36,15 +36,19 @@ export default function NavbarSection() {
             label={
               <Avatar
                 alt="User settings"
-                img="https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                img={
+                  user
+                    ? user.image
+                    : "https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                }
                 rounded
               />
             }
           >
             <Dropdown.Header>
-              <span className="block text-sm">Bonnie Green</span>
+              <span className="block text-sm">{user.name}</span>
               <span className="block truncate text-sm font-medium">
-                name@flowbite.com
+                {user.email}
               </span>
             </Dropdown.Header>
             <Dropdown.Item>Dashboard</Dropdown.Item>
